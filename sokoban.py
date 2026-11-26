@@ -1,3 +1,4 @@
+from terminal_io import read_key
 
 LEVELS = [
     [
@@ -40,6 +41,12 @@ LEVELS = [
 ]
 
 DIRECTIONS = {"w": (0, -1), "s": (0, 1), "a": (-1, 0), "d": (1, 0)}
+DIRECTIONS = {
+    "w": (0, -1), "up": (0, -1),
+    "s": (0, 1),  "down": (0, 1),
+    "a": (-1, 0), "left": (-1, 0),
+    "d": (1, 0),  "right": (1, 0),
+}
 
 
 def load_level(rows):
@@ -125,21 +132,34 @@ def is_cleared(game):
     return game["boxes"] == game["goals"]
 
 
+def get_rank(moves):
+    if moves <= 10:
+        return "S（素晴らしい！）"
+    elif moves <= 20:
+        return "A（ナイスプレイ！）"
+    else:
+        return "B（クリア達成！）"
+
+
 def main():
     level_index = 0
     game = load_level(LEVELS[level_index])
     while True:
         draw_game(game)
         if is_cleared(game):
-            print("クリア！ 次のステージへ進みます。")
+            rank = get_rank(game["moves"])
+            print(f"ステージ{level_index + 1} クリア！ ランク評価: {rank}")
             level_index += 1
             if level_index == len(LEVELS):
-                print("全ステージクリア！")
+                print("全ステージクリア！おめでとうございます！")
                 break
             input("Enterを押して次へ...")
             game = load_level(LEVELS[level_index])
             continue
-        key = input("操作 > ").strip().lower()[:1]
+        print("操作 > (WASD または 矢印キー)")
+        key = read_key()
+        if len(key) == 1:
+            key = key.lower()
         if key == "q":
             break
         if key == "r":
